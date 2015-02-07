@@ -1,0 +1,15 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+archivesBaseName = 'rabit'
+group = 'net.ligun'
+version = '0.1-SNAPSHOT'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile 'org.codehaus.groovy:groovy-all:2.4.0'
+  testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+}
