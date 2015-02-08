@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
 
-archivesBaseName = 'rabit'
+archivesBaseName = 'tippy'
 group = 'net.ligun'
 version = '0.1-SNAPSHOT'
 
