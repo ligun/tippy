@@ -139,7 +139,7 @@ public class Tippy {
     PREVIOUS('どき'),
     INC('ぴょん'),
     DEC('つーんだ'),
-    GET('いつも'),
+    GET('まち？'),
     PUT('こころ'),
     LOOP('ここあ'),
     JUMP('ちの'),

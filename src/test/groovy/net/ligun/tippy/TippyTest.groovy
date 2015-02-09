@@ -5,7 +5,7 @@ import spock.lang.*
 class TippySpec extends Specification {
   def "命令を解釈できる"() {
     when:
-      def strProgram = 'ぴょんつーんだふわどきいつもこころここあちの'
+      def strProgram = 'ぴょんつーんだふわどきまち？こころここあちの'
       
     then:
       def tippy = new Tippy(strProgram)
