@@ -5,16 +5,16 @@ import spock.lang.*
 class TippySpec extends Specification {
   def "命令を解釈できる"() {
     when:
-      def strProgram = 'ぴょんつーんだふわどきまち？こころここあちの'
+      def programData = 'ぴょんつーんだふわどきまち？こころここあちの'
       
     then:
-      def tippy = new Tippy(strProgram)
+      def tippy = new Tippy(programData:programData)
   }
   
   def "解釈できない文字列でIllegalArgumentExceptionをスローする"() {
     when:
-      def strProgram = 'りぜかわいい'
-      def tippy = new Tippy(strProgram)
+      def programData = 'りぜかわいい'
+      def tippy = new Tippy(programData:programData)
       
     then:
       thrown(IllegalArgumentException)
@@ -24,7 +24,7 @@ class TippySpec extends Specification {
     when:
       def program = 'ぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんここあふわぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんふわぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんふわぴょんぴょんぴょんぴょんぴょんどきどきどきつーんだちのふわこころふわぴょんぴょんこころぴょんぴょんぴょんぴょんぴょんぴょんぴょんこころこころぴょんぴょんぴょんこころふわつーんだこころつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだこころどきぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんこころつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだこころぴょんぴょんぴょんこころつーんだつーんだつーんだつーんだつーんだつーんだこころつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだこころふわぴょんこころ'
       def baos = new ByteArrayOutputStream()
-      def tippy = new Tippy(program, System.in, baos)
+      def tippy = new Tippy(programData:program, output:baos)
       
     then:
       tippy.run()

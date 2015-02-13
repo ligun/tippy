@@ -1,168 +1,79 @@
 package net.ligun.tippy
 
 public class GSpot {
-  private List<Token> data = new LinkedList<Byte>()
-  private Iterator<Byte> ptr
-  private Byte current
-  private Boolean left
-  private List<Token> program = new LinkedList<Token>()
-  private Iterator<Token> pc
-  private Token current_token
-  private InputStream input
-  private OutputStream output
+  protected List<Byte> data = [0x00]
+  protected Integer ptr = 0
+  protected List<Token> program = []
+  protected int pc = 0
+  protected List<Integer> jump_addr = new LinkedList<Integer>()
+  protected InputStream is
+  protected OutputStream os
+  protected def instructionMap
+  protected static Map TOKEN_LIST = [:]
   
-  public GSpot(String program_string, InputStream input = System.in, OutputStream output = System.out) {
-    compile(program_string)
-    data.add(0x00)
-    ptr = data.listIterator(0)
-    pc = program.listIterator(0)
-    this.input = input
-    this.output = output
+  static {
+    TOKEN_LIST[Token.NEXT] = '>'
+    TOKEN_LIST[Token.PREVIOUS] = '<'
+    TOKEN_LIST[Token.INC] = '+'
+    TOKEN_LIST[Token.DEC] = '-'
+    TOKEN_LIST[Token.GET] = ','
+    TOKEN_LIST[Token.PUT] = '.'
+    TOKEN_LIST[Token.LOOP] = '['
+    TOKEN_LIST[Token.JUMP] = ']'
+  }
+  
+  public GSpot(param) {
+    compile(param.programData)
+    this.is = param.input
+    this.os = param.output
+
+    Token.NEXT.metaClass.interpret { ++ptr }
+    Token.PREVIOUS.metaClass.interpret { --ptr }
+    Token.INC.metaClass.interpret { data[ptr] = data[ptr]? data[ptr]+1: 1 }
+    Token.DEC.metaClass.interpret { --data[ptr] }
+    Token.GET.metaClass.interpret { data[ptr] = is.read() }
+    Token.PUT.metaClass.interpret { os.write(data[ptr]) }
+    Token.LOOP.metaClass.interpret {
+      if(data[ptr] == 0) {
+        for(int i in pc..program.size()){
+          if(program[i] == Token.JUMP) {
+            pc = i
+            break
+          }
+        }
+      }else {
+        jump_addr.push(pc)
+      }
+    }
+    Token.JUMP.metaClass.interpret { pc = jump_addr.pop() - 1 }
   }
   
   public void run() {
-    current_token = pc.next()
-    current = ptr.next()
-    left = false
-    while(current_token != null) {
-      interpret(current_token)
+    while(program[pc] != null) {
+      program[pc].interpret()
+      ++pc
     }
   }
   
   protected void compile(String s) {
     if(s.length() == 0) { return }
-    Token token = Token.values().find{s.startsWith(it.getTokenString())}
-    if(token == null) {
+    try {
+      Token token = TOKEN_LIST.find{s.startsWith(it.value)}.key
+      program.add(token)
+      compile(s.substring(TOKEN_LIST[token].length(),s.length()))
+    }catch(NullPointerException e) {
       throw new IllegalArgumentException("${s} can't be interpreted.")
     }
-    program.add(token)
-    compile(s.substring(token.getTokenString().length(),s.length()))
   }
   
-  protected void interpret(Token token) {
-    switch(token) {
-      case Token.NEXT:
-        next()
-        break
-        
-      case Token.PREVIOUS:
-        previous()
-        break
-        
-      case Token.INC:
-        increment()
-        break
-        
-      case Token.DEC:
-        decrement()
-        break
-        
-      case Token.GET:
-        get()
-        break
-        
-      case Token.PUT:
-        put()
-        break
-        
-      case Token.LOOP:
-        loop()
-        break
-      case Token.JUMP:
-        jump()
-        break
-    }
-    pc_next()
-  }
-  
-  private void next() {
-    if(!ptr.hasNext()) {
-      ptr.add(0x00)
-      previous()
-    } 
-    current = ptr.next()
-    
-    if(left) {
-      current = ptr.next()
-    }
-    left = false
-  }
-  
-  private void previous() {
-    current = ptr.previous()
-    
-    if(!left) {
-      current = ptr.previous()
-    }
-    left = true
-  }
-  
-  private void increment() {
-    ptr.set(++current)
-  }
-  
-  private void decrement() {
-    ptr.set(--current)
-  }
-  
-  private void get() {
-    ptr.set(input.read())
-  }
-  
-  private void put() {
-    output.write(current)
-  }
-  
-  private void loop() {
-    if(current == 0) {
-      while(current_token != Token.JUMP) {
-        pc_next()
-      }
-    }
-  }
-  
-  private void jump() {
-    while(current_token != Token.LOOP) {
-      current_token = pc.previous()
-    }
-  }
-  
-  private void pc_next() {
-    if(pc.hasNext()) {
-      current_token = pc.next()
-    } else {
-      current_token = null
-    }
-  }
-  
-  private enum Token {
-    NEXT('ふわ'),
-    PREVIOUS('どき'),
-    INC('ぴょん'),
-    DEC('つーんだ'),
-    GET('まち？'),
-    PUT('こころ'),
-    LOOP('ここあ'),
-    JUMP('ちの'),
-    
-    private final String token_string
-    
-    private Token(final String token_string) {
-      this.token_string = token_string
-    }
-    
-    public String getTokenString() {
-      return token_string
-    }
-    
-    public static Token toToken(String token_string) {
-      Token token = values().find{ it.toTokenString == token_string }
-      
-      if (token == null) {
-        throw new IllegalArgumentException("Illegal token : ${token_string}")
-      }
-      
-      return token
-    }
+  protected enum Token {
+    NEXT,
+    PREVIOUS,
+    INC,
+    DEC,
+    GET,
+    PUT,
+    LOOP,
+    JUMP,
   }
 }

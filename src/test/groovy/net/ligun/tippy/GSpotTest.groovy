@@ -5,16 +5,16 @@ import spock.lang.*
 class GSpotSpec extends Specification {
   def "命令を解釈できる"() {
     when:
-      def strProgram = 'ぴょんつーんだふわどきまち？こころここあちの'
+      def programData = '><+-,.[]'
       
     then:
-      def gspot = new GSpot(strProgram)
+      def gspot = new GSpot(programData:programData)
   }
   
   def "解釈できない文字列でIllegalArgumentExceptionをスローする"() {
     when:
-      def strProgram = 'りぜかわいい'
-      def gspot = new GSpot(strProgram)
+      def programData = 'abcdefg'
+      def gspot = new GSpot(programData:programData)
       
     then:
       thrown(IllegalArgumentException)
@@ -22,9 +22,9 @@ class GSpotSpec extends Specification {
   
   def "Hello World"() {
     when:
-      def program = 'ぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんここあふわぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんふわぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんふわぴょんぴょんぴょんぴょんぴょんどきどきどきつーんだちのふわこころふわぴょんぴょんこころぴょんぴょんぴょんぴょんぴょんぴょんぴょんこころこころぴょんぴょんぴょんこころふわつーんだこころつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだこころどきぴょんぴょんぴょんぴょんぴょんぴょんぴょんぴょんこころつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだこころぴょんぴょんぴょんこころつーんだつーんだつーんだつーんだつーんだつーんだこころつーんだつーんだつーんだつーんだつーんだつーんだつーんだつーんだこころふわぴょんこころ'
+      def program = '+++++++++[>++++++++>+++++++++++>+++++<<<-]>.>++.+++++++..+++.>-.------------.<++++++++.--------.+++.------.--------.>+.'
       def baos = new ByteArrayOutputStream()
-      def gspot = new GSpot(program, System.in, baos)
+      def gspot = new GSpot(programData:program, output:baos)
       
     then:
       gspot.run()
