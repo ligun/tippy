@@ -24,15 +24,15 @@ public class GSpot {
   
   public GSpot(param) {
     compile(param.programData)
-    this.is = param.input
-    this.os = param.output
+    this.is = param.input?:System.in
+    this.os = param.output?:System.out
 
     Token.NEXT.metaClass.interpret { ++ptr }
     Token.PREVIOUS.metaClass.interpret { --ptr }
     Token.INC.metaClass.interpret { data[ptr] = data[ptr]? data[ptr]+1: 1 }
     Token.DEC.metaClass.interpret { --data[ptr] }
     Token.GET.metaClass.interpret { data[ptr] = is.read() }
-    Token.PUT.metaClass.interpret { os.write(data[ptr]) }
+    Token.PUT.metaClass.interpret { os.write(data[ptr]); os.flush() }
     Token.LOOP.metaClass.interpret {
       if(data[ptr] == 0) {
         for(int i in pc..program.size()){
